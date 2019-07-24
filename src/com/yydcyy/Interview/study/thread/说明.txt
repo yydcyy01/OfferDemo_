@@ -1,0 +1,25 @@
+VolatileDemo  2019年7月23日    演示volatile 可见性, 无原子性
+
+SingletonDemo 2019年7月23日    单例模式中的懒汉式, 采用 DCL , 并加入 volatile 轻量锁避免指令重排
+
+CASDemo 2019年7月23日
+
+ABADemo 2019年7月23日  没完, 待补
+
+AtomicReferenceDemo 2019年7月23日
+
+ContainerNotSafeDemo 2019年7月23日
+
+SpinLockDemo
+
+ReadWriteLockDemo 2019年7月24日    读写分离Demo 看 main()方法效果[读成对出现, 写无所谓], MyCache_Before 方法会脏读, MyCache_After 方法加锁,写成对
+
+CountryEnum
+CountDownLatchDemo 2019年7月24日    枚举使用. 写成类直接调用, 值得学习.  多线程计数器, 模拟教室关门场景
+
+CyclicBarrierDemo 2019年7月24日    Demo, "集齐七颗龙珠, 召唤神龙", 也是设计屏障, 到达count 执行命令. 此方法是 "增" , CountDownLatch 是 "减"
+
+BlockingQueueDemo 2019年7月24日    说明AddAndRemoveDemo();  OfferAndPoolDemo();  OfferDemo();三对添加方式 API Demo
+
+SynchronousQueue 2019年7月24日    Synchronous: 不存储元素的阻塞队列, 即单个元素的队列 [专属] 即取出才可放入.
+
