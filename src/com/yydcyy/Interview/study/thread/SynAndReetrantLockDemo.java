@@ -1,8 +1,8 @@
 package com.yydcyy.Interview.study.thread;
 
-/**
+/*
  * Created by YYDCYY on 2019-07-26.
- *题目 : synchronized 和 Lock 有什么区别 ? 用心的lock有什么好处? 请举例说说
+ *题目 : synchronized 和 Lock 有什么区别 ? 用新的lock有什么好处? 请举例说说
  *
  * 1  原始构成
  *       Synchronized 是关键字 属于 JVM 层面
@@ -25,7 +25,130 @@ package com.yydcyy.Interview.study.thread;
  *
  * 5  锁绑定多个条件 Condition
  *      Synchronized 没有
- *      ReentrantLock 用来实现分组唤醒需要唤醒的线程, 可以精准唤醒, 而不是像synchronized 要么随机唤醒一个县城, 要么随机唤醒全部线程
+ *      ReentrantLock 用来实现分组唤醒需要唤醒的线程, 可以精准唤醒, 而不是像synchronized 要么随机唤醒一个线程, 要么随机唤醒全部线程
  */
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * 题目 : 多线程之间 ,按顺序调用, 实现 A -> B -> C 三个线程启动, 要求入刑:
+ * AA 打印 5次, BB 打印10次, CC 打印 15次;
+ *
+ * 然后接着 AA打印 5 次, BB打印10次, cc 打印 15次
+ *  ....
+ *  循环10轮
+ *
+ *
+ *  用 synchronized 很麻烦, 而用 retrantlockDemo  比较简单
+ *  {
+ *      精确唤醒不可以用 notifyAll
+ *  }
+ */
+
+class ShareResource{
+    //一把锁, 三把备用钥匙
+    private int number = 1; // A = 1; B = 2; C = 3;
+    private Lock lock = new ReentrantLock(); // 可重入锁
+    private Condition c1 = lock.newCondition(); // c1 A 条件
+    private Condition c2 = lock.newCondition(); //B
+    private Condition c3 = lock.newCondition(); // C
+
+    //1 判别
+    //2 干活
+    //3 通知
+
+
+    public void print5(){
+
+        lock.lock();
+        try {
+            //1 判别
+            while (number != 1){ // 自旋不等于1, 等待 | while而不是if
+                c1.await();
+            }
+            //2 干活
+            for (int i = 1; i <= 5; i++) {
+                System.out.println(Thread.currentThread().getName() + "\t" + i);
+            }
+            //3 通知
+            number = 2; // 通过共享变量通知2号
+            c2.signal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+    public  void print10(){
+
+        lock.lock();
+        try {
+            //1 判别
+            while (number != 2){ // 自旋 | while
+                c2.await();
+            }
+            //2 干活
+            for (int i = 1; i <= 10; i++) {
+                System.out.println(Thread.currentThread().getName() + "\t" + i);
+            }
+            //3 通知
+            number = 3; // 通过共享变量通知3号, 精准唤醒
+            c3.signal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }}
+    public  void print15(){
+
+        lock.lock();
+        try {
+            //1 判别
+            while (number != 3){ // 自旋 | while
+                c3.await();
+            }
+            //2 干活
+            for (int i = 1; i <= 15; i++) {
+                System.out.println(Thread.currentThread().getName() + "\t" + i);
+            }
+            //3 通知
+            number = 1; // 通过共享变量通知1号
+            c1.signal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }}
+
+
+}
 public class SynAndReetrantLockDemo {
+
+    public static void main(String[] args) {
+        ShareResource shareResource = new ShareResource();
+
+        new Thread(()->{
+            //按需求, 循环10次, 执行对应方法
+            for (int i = 1; i <=10 ; i++) {
+                shareResource.print5();
+            }
+        }, "AA").start();
+
+        new Thread(()->{
+            //按需求, 循环10次, 执行对应方法
+            for (int i = 1; i <=10 ; i++) {
+                shareResource.print10();
+            }
+        }, "BB").start();
+
+        new Thread(()->{
+            //按需求, 循环10次, 执行对应方法
+            for (int i = 1; i <=10 ; i++) {
+                shareResource.print15();
+            }
+        }, "CC").start();
+    }
 }

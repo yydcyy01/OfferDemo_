@@ -24,3 +24,5 @@ BlockingQueueDemo 2019年7月24日    说明AddAndRemoveDemo();  OfferAndPoolDem
 SynchronousQueue 2019年7月24日    Synchronous: 不存储元素的阻塞队列, 即单个元素的队列 [专属] 即取出才可放入.
 
 ProdConsumer_TraditionDemo 2019年7月25日     传统方式多线程实现. 面试考点: 多线程判断用While而非 if(), 防止spurious wakeup 虚假唤醒否则控制不了 0,1交替.;具体看 API 文档说明,
+
+SynAndReetrantLockDemo 2019年7月26日01:30:45 synchronized 和 Lock 有什么区别 ?用新的lock有什么好处? 并实现 三个线程{A[打印1-5],B[打印1-10]C[打印1-15] }重复10遍 的例子
