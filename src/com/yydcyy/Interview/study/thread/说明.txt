@@ -23,3 +23,4 @@ BlockingQueueDemo 2019年7月24日    说明AddAndRemoveDemo();  OfferAndPoolDem
 
 SynchronousQueue 2019年7月24日    Synchronous: 不存储元素的阻塞队列, 即单个元素的队列 [专属] 即取出才可放入.
 
+ProdConsumer_TraditionDemo 2019年7月25日     传统方式多线程实现. 面试考点: 多线程判断用While而非 if(), 防止spurious wakeup 虚假唤醒否则控制不了 0,1交替.;具体看 API 文档说明,
