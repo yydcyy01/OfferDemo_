@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  *
  * 一下两个类,  实现Demo
  *
- * 恶汉式 : Java 类加载器设计模式导致  没有现成安全问题
+ * 饿汉式 : Java 类加载器设计模式导致  没有线程安全问题
  * 缺点 : 万一不用 ,你就创建了, 讨厌~
  *
  * => 引出懒汉式, 延迟创建对象
@@ -54,21 +54,20 @@ public class T2 {
              demo
          */
 
-        System.out.println("====================懒汉式 : Singleton4 =============================");
-        Singleton4 s4 = Singleton4.getINSTANCE();
+       /*  System.out.println("====================懒汉式 : Singleton4 =============================");
+       Singleton4 s4 = Singleton4.getINSTANCE();
         Singleton4 s5 = Singleton4.getINSTANCE();
-
-        System.out.println("s4 == s5 ? " + (s4 == s5));
-        System.out.println(s4);
-        System.out.println(s5);
+*/
         /**
          * s4 == s5true
          com.yydcyy.demo.Singleton4@7f31245a
          com.yydcyy.demo.Singleton4@7f31245a
          */
+
+          /*
         System.out.println("====================懒汉式 : Singleton4 多线程Demo =============================");
 
-        Callable<Singleton4> call = new Callable<Singleton4>() {
+      Callable<Singleton4> call = new Callable<Singleton4>() {
             @Override
             public Singleton4 call() throws Exception {
                 return Singleton4.getINSTANCE();
@@ -82,7 +81,65 @@ public class T2 {
         Singleton4 sf1 = f1.get();
         Singleton4 sf2 = f2.get();
 
-        es.shutdown();
+        System.out.println("sf1 == sf2 ? " + (sf1 == sf2));
+        System.out.println(sf1);
+        System.out.println(sf2);
+
+        es.shutdown();*/
+         /*     sf1 == sf2 ? false
+        com.yydcyy.demo.Singleton4@4b67cf4d
+        com.yydcyy.demo.Singleton4@7ea987ac
+
+        线程1 休眠100ms还没new,  线程2 new了.  故线程不安全 (出现是概率问题, 不一定会出现,要预防)
+        */
+
+        System.out.println("====================懒汉式 : Singleton5   多线程Demo 加锁synchronized=============================");
+
+       /* Callable<Singleton5> call2 = new Callable<Singleton5>() {
+            @Override
+            public Singleton5 call() throws Exception {
+                return Singleton5.getINSTANCE();
+            }
+        };
+
+        ExecutorService es2 = Executors.newFixedThreadPool(2);
+        Future<Singleton5> f3 = es2.submit(call2);
+        Future<Singleton5> f4 = es2.submit(call2);
+
+        Singleton5 sf3 = f3.get();
+        Singleton5 sf4 = f4.get();
+
+        System.out.println("sf3 == sf4 ? " + (sf3 == sf4));
+        System.out.println(sf3);
+        System.out.println(sf4);
+        es2.shutdown();*/
+   /*     加锁了, 再怎么测试都是 true 算是解决了这个问题, 但是不是最优的
+           194 行, 加了层 if (INSTANCE == null) {判断.  : 若其他线程创建了,就不等锁了.
+
+   sf3 == sf4 ? true
+com.yydcyy.demo.Singleton5@4b67cf4d
+com.yydcyy.demo.Singleton5@4b67cf4d  故线程不安全 (出现是概率问题, 不一定会出现,要预防)
+        */
+
+        System.out.println("====================懒汉式 : Singleton6   多线程Demo 内部类形式,需主动初始化,避免线程不安全=============================");
+        Callable<Singleton6> call3 = new Callable<Singleton6>() {
+            @Override
+            public Singleton6 call() throws Exception {
+                return Singleton6.getINSTANCE();
+            }
+        };
+
+        ExecutorService es2 = Executors.newFixedThreadPool(2);
+        Future<Singleton6> f5 = es2.submit(call3);
+        Future<Singleton6> f6 = es2.submit(call3);
+
+        Singleton6 sf5 = f5.get();
+        Singleton6 sf6 = f6.get();
+
+        System.out.println("sf5 == sf6 ? " + (sf5 == sf6));
+        System.out.println(sf5);
+        System.out.println(sf6);
+        es2.shutdown();
     }
 }
 
@@ -132,7 +189,7 @@ class Singleton3{
 }
 
 
-//===================懒汉式=======================================
+//===================懒汉式  但是线程不安全=======================================
 class Singleton4{
     private static Singleton4 INSTANCE;
     private Singleton4() throws ExecutionException, InterruptedException {
@@ -145,7 +202,46 @@ class Singleton4{
         }
         return INSTANCE;
     }
+}
 
+class Singleton5{
+    /*
+        相比4 ,加了把 synchronized
+     */
+    private static Singleton5 INSTANCE;
+    private Singleton5() throws ExecutionException, InterruptedException {
+
+    }
+    public static Singleton5 getINSTANCE() throws ExecutionException, InterruptedException {
+        if (INSTANCE == null) {
+            synchronized (Singleton5.class) {
+                if (INSTANCE == null) {
+                    Thread.sleep(100);  //休眠, 使暴露出懒汉式 线程不安全特性
+                    INSTANCE = new Singleton5();
+                }
+                return INSTANCE;
+            }
+        }
+        return INSTANCE;
+    }
+}
+
+/**
+ * Singleton5 可以满足要求, 但是太麻烦, 再来!
+ * Singleton6 : 在内部类被加载和初始化时, 才创建   instance实例对象
+ * 内部类不会随着外部类的加载和初始化而初始化,   需要单独加载进行初始化的
+ * 因此 (主动加载内部类进行初始化, 创建): 故是线程安全的
+ */
+class Singleton6{
+    //private static Singleton6 instance;
+    private Singleton6(){
+    }
+    private static class Inner{
+        private static final Singleton6 INSTANCE = new Singleton6();
+    }
+    public static Singleton6 getINSTANCE() {
+        return Inner.INSTANCE;
+    }
 
 
 }
