@@ -30,3 +30,7 @@ SynAndReetrantLockDemo 2019年7月26日01:30:45 synchronized 和 Lock 有什么�
 ProdConsumer_BlockQueueDemo 2019年7月26日11:41:54  生产消费者v3, 阻塞队列版, 涉及 volatile / CAS / atomicInteger / BlockQueue / 线程交互 / 原子引用 .  有点问题, 锁好像没作用. 看老半天没发现啥问题,再说
 
 CallableDemo 2019年7月26日14:57:12    Runnable 和 Callable 通过FeatureTask联系起来, 适配者模式
+
+MyThreadPoolDemo 2019年7月27日09:29:23    线程池7个参数, 第七个参数的四种(拒绝策略) Demo
+
+GCRootDemo 2019年7月27日    GCRoot Set 集合 四种种类
