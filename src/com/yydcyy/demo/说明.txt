@@ -21,3 +21,5 @@ T5.java  递归与迭代实现
 
 T6.java  成员变量与局部变量, 结合T3复习.
 
+单点登录, JVM , Git分支, Redis持久化 AOF, RDB,   ElasticSearch Solr区别, 消息队列, 单点登录等 见笔记及ppt
+
