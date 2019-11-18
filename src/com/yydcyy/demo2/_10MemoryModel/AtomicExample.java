@@ -1,4 +1,4 @@
-package com.yydcyy.demo2._9ThreadUnsafe;
+package com.yydcyy.demo2._10MemoryModel;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
