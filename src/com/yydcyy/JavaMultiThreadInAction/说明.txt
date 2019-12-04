@@ -1,0 +1,4 @@
+Java 多线程编程实战指南 Demo
+
+JavaMultiThreadInAction.util.stf
+    实现JITReorderingDemo , 演示 JIT 编译器指令重排序 Demo, 引入了 util.stf 包.  学到了学到了. util.stf 下的文件可以自定义注释组合.
